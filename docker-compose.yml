@@ -14,6 +14,7 @@ x-backend-env: &backend-env
   CVAT_LOG_IMPORT_ERRORS: 'true'
   CVAT_ALLOW_STATIC_CACHE: '${CVAT_ALLOW_STATIC_CACHE:-no}'
   no_proxy: ${no_proxy:-}
+  SMOKESCREEN_OPTS: "" # Hata veren değişkeni burada tanımladık
 
 x-backend-deps: &backend-deps
   cvat_redis_inmem:
@@ -102,7 +103,6 @@ services:
     networks:
       - cvat
 
-  # Worker'lar (gerekli olanlar korundu, NUMPROCS düşürüldü)
   cvat_worker_utils:
     container_name: cvat_worker_utils
     image: cvat/server:${CVAT_VERSION:-dev}
@@ -159,7 +159,6 @@ services:
     networks:
       - cvat
 
-  # Opsiyonel worker'lar - eğer kullanmayacaksan bu blokları sil
   cvat_worker_webhooks:
     container_name: cvat_worker_webhooks
     image: cvat/server:${CVAT_VERSION:-dev}
@@ -174,7 +173,6 @@ services:
     networks:
       - cvat
 
-  # Traefik (proxy) - dashboard'ı yorum satırına aldım
   traefik:
     image: traefik:v3.6
     container_name: traefik
@@ -192,7 +190,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - cvat
-    # logging: ... (isteğe göre kısaltılabilir)
 
 volumes:
   cvat_db:
