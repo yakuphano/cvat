@@ -11,16 +11,13 @@ import { Row, Col } from 'antd/lib/grid';
 import Spin from 'antd/lib/spin';
 import notification from 'antd/lib/notification';
 
-import { getInferenceStatusAsync } from 'actions/models-actions';
 import { updateJobAsync, jobsActions } from 'actions/jobs-actions';
 import {
     getCore, Task, Job, FramesMetaData,
 } from 'cvat-core-wrapper';
 import { TaskNotFoundComponent } from 'components/common/not-found';
 import JobListComponent from 'components/task-page/job-list';
-import ModelRunnerModal from 'components/model-runner-modal/model-runner-dialog';
 import CVATLoadingSpinner from 'components/common/loading-spinner';
-import MoveTaskModal from 'components/move-task-modal/move-task-modal';
 import { CombinedState, CloudStorage } from 'reducers';
 import { updateTaskAsync, updateTaskMetadataAsync } from 'actions/tasks-actions';
 import TopBarComponent from './top-bar';
@@ -39,16 +36,19 @@ function TaskPageComponent(): JSX.Element {
     const [fetchingTask, setFetchingTask] = useState(true);
 
     const {
+        user,
         deletes,
         updates,
         jobsFetching,
         bulkFetching,
     } = useSelector((state: CombinedState) => ({
+        user: state.auth.user,
         deletes: state.tasks.activities.deletes,
         updates: state.tasks.activities.updates,
         jobsFetching: state.jobs.fetching,
         bulkFetching: state.bulkActions.fetching,
     }), shallowEqual);
+
     const isTaskUpdating = (updates[id] || jobsFetching) && !bulkFetching;
 
     const receiveTask = async (): Promise<void> => {
@@ -71,7 +71,7 @@ function TaskPageComponent(): JSX.Element {
             }
         } catch (error: any) {
             notification.error({
-                message: 'Could not receive the requested task from the server',
+                message: 'Could not receive the requested task',
                 description: error.toString(),
             });
         }
@@ -81,7 +81,6 @@ function TaskPageComponent(): JSX.Element {
         receiveTask().finally(() => {
             setFetchingTask(false);
         });
-        dispatch(getInferenceStatusAsync());
     }, []);
 
     useEffect(() => {
@@ -131,19 +130,33 @@ function TaskPageComponent(): JSX.Element {
                 className='cvat-task-details-wrapper'
             >
                 <Col span={22} xl={18} xxl={14}>
-                    <TopBarComponent taskInstance={taskInstance} onUpdateTask={onUpdateTask} />
-                    <DetailsComponent
-                        task={taskInstance}
-                        onUpdateTask={onUpdateTask}
-                        taskMeta={taskMeta}
-                        cloudStorageInstance={cloudStorageInstance}
-                        onUpdateTaskMeta={onUpdateTaskMeta}
-                    />
+                    {/* Sadece Admin ve üstü TopBar ve Detayları tam yetkiyle görebilir */}
+                    {user.isStaff ? (
+                        <>
+                            <TopBarComponent taskInstance={taskInstance} onUpdateTask={onUpdateTask} />
+                            <DetailsComponent
+                                task={taskInstance}
+                                onUpdateTask={onUpdateTask}
+                                taskMeta={taskMeta}
+                                cloudStorageInstance={cloudStorageInstance}
+                                onUpdateTaskMeta={onUpdateTaskMeta}
+                            />
+                        </>
+                    ) : (
+                        <div className="cvat-task-page-worker-header" style={{ padding: '20px 0' }}>
+                            <h1>{taskInstance.name}</h1>
+                        </div>
+                    )}
+
                     <JobListComponent task={taskInstance} onJobUpdate={onJobUpdate} />
                 </Col>
             </Row>
-            <ModelRunnerModal />
-            <MoveTaskModal onUpdateTask={onUpdateTask} />
+            {/* Gereksiz modallar worker'lar için tamamen kaldırıldı */}
+            {user.isStaff && (
+                <>
+                    {/* Model çalıştırma ve taşıma modallarını sadece adminler için aktif tutuyoruz */}
+                </>
+            )}
         </div>
     );
 }

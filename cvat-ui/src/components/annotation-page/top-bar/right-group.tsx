@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { Col } from 'antd/lib/grid';
 import Icon, { InfoCircleOutlined } from '@ant-design/icons';
 import Select from 'antd/lib/select';
@@ -16,7 +17,7 @@ import config from 'config';
 import {
     DimensionType, Job, JobStage, JobState,
 } from 'cvat-core-wrapper';
-import { Workspace } from 'reducers';
+import { Workspace, CombinedState } from 'reducers';
 
 import MDEditor from '@uiw/react-md-editor';
 
@@ -41,6 +42,8 @@ function RightGroup(props: Props): JSX.Element {
         initialOpenGuide,
     } = props;
 
+    // Admin kontrolü için user state'ini alıyoruz
+    const user = useSelector((state: CombinedState) => state.auth.user);
     const filters = annotationFilters.length;
 
     const openGuide = useCallback(() => {
@@ -66,7 +69,7 @@ function RightGroup(props: Props): JSX.Element {
         }).catch((error: unknown) => {
             notification.error({
                 message: 'Could not receive annotation guide',
-                description: error instanceof Error ? error.message : console.error('error'),
+                description: error instanceof Error ? error.message : 'Unknown error',
             });
         });
     }, [jobInstance]);
@@ -82,21 +85,16 @@ function RightGroup(props: Props): JSX.Element {
                 let seenGuides = [];
                 try {
                     seenGuides = JSON.parse(localStorage.getItem('seenGuides') || '[]');
-                    if (!Array.isArray(seenGuides) || seenGuides.some((el) => !Number.isInteger(el))) {
-                        throw new Error('Wrong structure stored in local storage');
-                    }
                 } catch (error: unknown) {
                     seenGuides = [];
                 }
 
                 if (!seenGuides.includes(jobInstance.guideId)) {
-                    // open guide if the user have not seen it yet
                     openGuide();
-                    const updatedSeenGuides = Array
-                        .from(new Set([
-                            jobInstance.guideId,
-                            ...seenGuides.slice(0, config.LOCAL_STORAGE_SEEN_GUIDES_MEMORY_LIMIT - 1),
-                        ]));
+                    const updatedSeenGuides = Array.from(new Set([
+                        jobInstance.guideId,
+                        ...seenGuides.slice(0, config.LOCAL_STORAGE_SEEN_GUIDES_MEMORY_LIMIT - 1),
+                    ]));
                     localStorage.setItem('seenGuides', JSON.stringify(updatedSeenGuides));
                 }
             }
@@ -121,6 +119,7 @@ function RightGroup(props: Props): JSX.Element {
                 <Icon component={FullscreenIcon} />
                 Fullscreen
             </Button>
+
             { jobInstance.guideId !== null && (
                 <Button
                     type='link'
@@ -131,6 +130,7 @@ function RightGroup(props: Props): JSX.Element {
                     Guide
                 </Button>
             )}
+
             <Button
                 type='link'
                 className='cvat-annotation-header-info-button cvat-annotation-header-button'
@@ -139,42 +139,40 @@ function RightGroup(props: Props): JSX.Element {
                 <InfoCircleOutlined />
                 Info
             </Button>
+
             <Button
                 type='link'
-                className={`cvat-annotation-header-filters-button cvat-annotation-header-button ${filters ?
-                    'filters-armed' : ''
-                }`}
+                className={`cvat-annotation-header-filters-button cvat-annotation-header-button ${filters ? 'filters-armed' : ''}`}
                 onClick={showFilters}
             >
                 <Icon component={FilterIcon} />
                 Filters
             </Button>
+
+            {/* Workspace Seçici: Sadece Admin ise aktif, Worker ise sadece mevcut modu gösterir */}
             <div>
                 <Select
                     popupClassName='cvat-workspace-selector-dropdown'
                     className='cvat-workspace-selector'
                     onChange={changeWorkspace}
                     value={workspace}
+                    disabled={!user.isStaff} // Worker ise seçimi devre dışı bırak
                 >
                     {Object.values(Workspace).map((ws) => {
                         if (jobInstance.dimension === DimensionType.DIMENSION_3D) {
-                            if (ws === Workspace.STANDARD) {
-                                return null;
-                            }
-                            return (
-                                <Select.Option disabled={ws !== Workspace.STANDARD3D} key={ws} value={ws}>
-                                    {ws}
-                                </Select.Option>
-                            );
+                            return ws === Workspace.STANDARD3D ? (
+                                <Select.Option key={ws} value={ws}>{ws}</Select.Option>
+                            ) : null;
                         }
-                        if (ws !== Workspace.STANDARD3D) {
-                            return (
-                                <Select.Option key={ws} value={ws}>
-                                    {ws}
-                                </Select.Option>
-                            );
+                        // Worker'lar için sadece temel modları göster, Review ve 3D'yi listeden çıkar
+                        if (!user.isStaff && (ws === Workspace.REVIEW || ws === Workspace.STANDARD3D)) {
+                            return null;
                         }
-                        return null;
+                        return (
+                            <Select.Option key={ws} value={ws}>
+                                {ws}
+                            </Select.Option>
+                        );
                     })}
                 </Select>
             </div>

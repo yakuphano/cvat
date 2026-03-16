@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
-import { RouteComponentProps, useHistory } from 'react-router';
+import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { Row, Col } from 'antd/lib/grid';
 
@@ -13,23 +13,12 @@ import LoginForm, { LoginData } from './login-form';
 
 interface LoginPageComponentProps {
     fetching: boolean;
-    renderResetPassword: boolean;
-    renderRegistrationComponent: boolean;
-    renderBasicLoginComponent: boolean;
-    hasEmailVerificationBeenSent: boolean;
     onLogin: (credential: string, password: string) => void;
 }
 
 function LoginPageComponent(props: LoginPageComponentProps & RouteComponentProps): JSX.Element {
-    const history = useHistory();
-    const {
-        fetching, renderResetPassword, renderRegistrationComponent, renderBasicLoginComponent,
-        hasEmailVerificationBeenSent, onLogin,
-    } = props;
+    const { fetching, onLogin } = props;
 
-    if (hasEmailVerificationBeenSent) {
-        history.push('/auth/email-verification-sent');
-    }
     return (
         <SigningLayout>
             <Col {...formSizes.wrapper}>
@@ -37,9 +26,10 @@ function LoginPageComponent(props: LoginPageComponentProps & RouteComponentProps
                     <Col {...formSizes.form}>
                         <LoginForm
                             fetching={fetching}
-                            renderResetPassword={renderResetPassword}
-                            renderRegistrationComponent={renderRegistrationComponent}
-                            renderBasicLoginComponent={renderBasicLoginComponent}
+                            // Aşağıdaki değerleri 'false' yaparak worker'ların bu yollara girmesini engelliyoruz
+                            renderResetPassword={false}
+                            renderRegistrationComponent={false}
+                            renderBasicLoginComponent={true}
                             onSubmit={(loginData: LoginData): void => {
                                 onLogin(loginData.credential, loginData.password);
                             }}

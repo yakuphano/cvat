@@ -12,10 +12,7 @@ import Button from 'antd/lib/button';
 import './styles.scss';
 import { Job } from 'cvat-core-wrapper';
 import AttributeAnnotationWorkspace from 'components/annotation-page/attribute-annotation-workspace/attribute-annotation-workspace';
-import SingleShapeWorkspace from 'components/annotation-page/single-shape-workspace/single-shape-workspace';
-import ReviewAnnotationsWorkspace from 'components/annotation-page/review-workspace/review-workspace';
 import StandardWorkspaceComponent from 'components/annotation-page/standard-workspace/standard-workspace';
-import StandardWorkspace3DComponent from 'components/annotation-page/standard3D-workspace/standard3D-workspace';
 import TagAnnotationWorkspace from 'components/annotation-page/tag-annotation-workspace/tag-annotation-workspace';
 import FiltersModalComponent from 'components/annotation-page/top-bar/filters-modal';
 import { JobNotFoundComponent } from 'components/common/not-found';
@@ -59,7 +56,6 @@ export default function AnnotationPageComponent(props: Props): JSX.Element {
             saveLogs();
             closeJob();
             EventRecorder.logger = null;
-
             if (root) {
                 root.style.minHeight = '';
             }
@@ -98,11 +94,10 @@ export default function AnnotationPageComponent(props: Props): JSX.Element {
                             >
                                 here
                             </Button>
-                            if you would like to continue
+                            to continue
                         </span>
                     ),
                     placement: 'topRight',
-                    className: 'cvat-notification-continue-job',
                 });
             }
 
@@ -110,20 +105,9 @@ export default function AnnotationPageComponent(props: Props): JSX.Element {
 
             if (!job.labels.length) {
                 notification.warning({
-                    message: 'No labels',
-                    description: (
-                        <span>
-                            {`${job.projectId ? 'Project' : 'Task'} ${
-                                job.projectId || job.taskId
-                            } does not contain any labels. `}
-                            <a href={`/${job.projectId ? 'projects' : 'tasks'}/${job.projectId || job.taskId}/`}>
-                                Add
-                            </a>
-                            {' the first one for editing annotation.'}
-                        </span>
-                    ),
+                    message: 'No labels found',
+                    description: 'This task does not contain any labels. Please contact your admin.',
                     placement: 'topRight',
-                    className: 'cvat-notification-no-labels',
                 });
             }
         }
@@ -149,12 +133,10 @@ export default function AnnotationPageComponent(props: Props): JSX.Element {
                 <AnnotationTopBarContainer />
             </Layout.Header>
             <Layout.Content className='cvat-annotation-layout-content'>
-                {workspace === Workspace.STANDARD3D && <StandardWorkspace3DComponent />}
+                {/* Sadece standart ve temel workspace modları bırakıldı, 3D ve Review kaldırıldı */}
                 {workspace === Workspace.STANDARD && <StandardWorkspaceComponent />}
-                {workspace === Workspace.SINGLE_SHAPE && <SingleShapeWorkspace />}
                 {workspace === Workspace.ATTRIBUTES && <AttributeAnnotationWorkspace />}
                 {workspace === Workspace.TAGS && <TagAnnotationWorkspace />}
-                {workspace === Workspace.REVIEW && <ReviewAnnotationsWorkspace />}
             </Layout.Content>
             <FiltersModalComponent />
             <StatisticsModalComponent />

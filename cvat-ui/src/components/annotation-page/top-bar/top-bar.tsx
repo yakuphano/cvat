@@ -146,99 +146,98 @@ export default function AnnotationTopBarComponent(props: Props): JSX.Element {
         showSearchFrameByName,
     } = props;
 
-    const playerItems: [JSX.Element, number][] = [];
-
-    playerItems.push([(
-        <PlayerButtons
-            key='player_buttons'
-            playing={playing}
-            playPauseShortcut={playPauseShortcut}
-            nextFrameShortcut={nextFrameShortcut}
-            previousFrameShortcut={previousFrameShortcut}
-            forwardShortcut={forwardShortcut}
-            backwardShortcut={backwardShortcut}
-            navigationType={navigationType}
-            chapters={chapters}
-            keyMap={keyMap}
-            workspace={workspace}
-            onPrevFrame={onPrevFrame}
-            onNextFrame={onNextFrame}
-            onForward={onForward}
-            onBackward={onBackward}
-            onFirstFrame={onFirstFrame}
-            onLastFrame={onLastFrame}
-            onSwitchPlay={onSwitchPlay}
-            onSearchAnnotations={onSearchAnnotations}
-            onSearchChapters={onSearchChapters}
-            onHoveredChapter={setHoveredChapter}
-            onSelectChapter={onSelectChapter}
-            setNavigationType={setNavigationType}
-        />
-    ), 0]);
-
-    playerItems.push([(
-        <PlayerNavigation
-            key='player_navigation'
-            startFrame={startFrame}
-            stopFrame={stopFrame}
-            playing={playing}
-            chapters={chapters}
-            hoveredChapter={hoveredChapter}
-            ranges={ranges}
-            frameNumber={frameNumber}
-            frameFilename={frameFilename}
-            frameDeleted={frameDeleted}
-            deleteFrameShortcut={deleteFrameShortcut}
-            focusFrameInputShortcut={focusFrameInputShortcut}
-            searchFrameByNameShortcut={searchFrameByNameShortcut}
-            inputFrameRef={inputFrameRef}
-            keyMap={keyMap}
-            workspace={workspace}
-            onSliderChange={onSliderChange}
-            onInputChange={onInputChange}
-            onURLIconClick={onURLIconClick}
-            onCopyFilenameIconClick={onCopyFilenameIconClick}
-            onDeleteFrame={onDeleteFrame}
-            onRestoreFrame={onRestoreFrame}
-            switchNavigationBlocked={switchNavigationBlocked}
-            switchShowSearchPallet={switchShowSearchPallet}
-            showSearchFrameByName={showSearchFrameByName}
-        />
-    ), 10]);
-
     return (
-        <Row justify='space-between'>
-            <LeftGroup
-                saving={saving}
-                undoAction={undoAction}
-                redoAction={redoAction}
-                undoShortcut={undoShortcut}
-                redoShortcut={redoShortcut}
-                activeControl={activeControl}
-                drawShortcut={drawShortcut}
-                switchToolsBlockerShortcut={switchToolsBlockerShortcut}
-                toolsBlockerState={toolsBlockerState}
-                onUndoClick={onUndoClick}
-                onRedoClick={onRedoClick}
-                onFinishDraw={onFinishDraw}
-                onSwitchToolsBlockerState={onSwitchToolsBlockerState}
-                keyMap={keyMap}
-            />
-            <Col className='cvat-annotation-header-player-group'>
-                <Row align='middle'>
-                    { playerItems.sort((menuItem1, menuItem2) => menuItem1[1] - menuItem2[1])
-                        .map((menuItem) => menuItem[0]) }
+        <Row justify='space-between' align='middle' style={{ width: '100%', padding: '0 10px' }}>
+            <Col flex="0 1 auto">
+                <LeftGroup
+                    saving={saving}
+                    undoAction={undoAction}
+                    redoAction={redoAction}
+                    undoShortcut={undoShortcut}
+                    redoShortcut={redoShortcut}
+                    activeControl={activeControl}
+                    drawShortcut={drawShortcut}
+                    switchToolsBlockerShortcut={switchToolsBlockerShortcut}
+                    toolsBlockerState={toolsBlockerState}
+                    onUndoClick={onUndoClick}
+                    onRedoClick={onRedoClick}
+                    onFinishDraw={onFinishDraw}
+                    onSwitchToolsBlockerState={onSwitchToolsBlockerState}
+                    keyMap={keyMap}
+                />
+            </Col>
+
+            <Col flex="1 1 auto" className='cvat-annotation-header-player-group'>
+                <Row align='middle' justify='center'>
+                    <Col>
+                        <PlayerButtons
+                            playing={playing}
+                            playPauseShortcut={playPauseShortcut}
+                            nextFrameShortcut={nextFrameShortcut}
+                            previousFrameShortcut={previousFrameShortcut}
+                            forwardShortcut={forwardShortcut}
+                            backwardShortcut={backwardShortcut}
+                            navigationType={navigationType}
+                            chapters={chapters}
+                            keyMap={keyMap}
+                            workspace={workspace}
+                            onPrevFrame={onPrevFrame}
+                            onNextFrame={onNextFrame}
+                            onForward={onForward}
+                            onBackward={onBackward}
+                            onFirstFrame={onFirstFrame}
+                            onLastFrame={onLastFrame}
+                            onSwitchPlay={onSwitchPlay}
+                            onSearchAnnotations={onSearchAnnotations}
+                            onSearchChapters={onSearchChapters}
+                            onHoveredChapter={setHoveredChapter}
+                            onSelectChapter={onSelectChapter}
+                            setNavigationType={setNavigationType}
+                        />
+                    </Col>
+                    <Col flex="1" style={{ padding: '0 20px' }}>
+                        <PlayerNavigation
+                            startFrame={startFrame}
+                            stopFrame={stopFrame}
+                            playing={playing}
+                            chapters={chapters}
+                            hoveredChapter={hoveredChapter}
+                            ranges={ranges}
+                            frameNumber={frameNumber}
+                            frameFilename={frameFilename}
+                            frameDeleted={frameDeleted}
+                            deleteFrameShortcut={deleteFrameShortcut}
+                            focusFrameInputShortcut={focusFrameInputShortcut}
+                            searchFrameByNameShortcut={searchFrameByNameShortcut}
+                            inputFrameRef={inputFrameRef}
+                            keyMap={keyMap}
+                            workspace={workspace}
+                            onSliderChange={onSliderChange}
+                            onInputChange={onInputChange}
+                            onURLIconClick={onURLIconClick}
+                            onCopyFilenameIconClick={onCopyFilenameIconClick}
+                            onDeleteFrame={onDeleteFrame}
+                            onRestoreFrame={onRestoreFrame}
+                            switchNavigationBlocked={switchNavigationBlocked}
+                            switchShowSearchPallet={switchShowSearchPallet}
+                            showSearchFrameByName={showSearchFrameByName}
+                        />
+                    </Col>
                 </Row>
             </Col>
-            <RightGroup
-                workspace={workspace}
-                jobInstance={jobInstance}
-                annotationFilters={annotationFilters}
-                initialOpenGuide={initialOpenGuide}
-                changeWorkspace={changeWorkspace}
-                showStatistics={showStatistics}
-                showFilters={showFilters}
-            />
+
+            <Col flex="0 1 auto">
+                <RightGroup
+                    workspace={workspace}
+                    jobInstance={jobInstance}
+                    annotationFilters={annotationFilters}
+                    initialOpenGuide={initialOpenGuide}
+                    // Sadeleştirme: Workspace değiştirme fonksiyonunu pasifize etme veya kısıtlama
+                    changeWorkspace={changeWorkspace}
+                    showStatistics={showStatistics}
+                    showFilters={showFilters}
+                />
+            </Col>
         </Row>
     );
 }

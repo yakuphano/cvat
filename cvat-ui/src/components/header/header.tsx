@@ -14,8 +14,6 @@ import {
     InfoCircleOutlined,
     LoadingOutlined,
     LogoutOutlined,
-    GithubOutlined,
-    QuestionCircleOutlined,
     CaretDownOutlined,
     ControlOutlined,
     UserOutlined,
@@ -32,7 +30,6 @@ import Text from 'antd/lib/typography/Text';
 import config from 'config';
 
 import { Organization } from 'cvat-core-wrapper';
-import CVATTooltip from 'components/common/cvat-tooltip';
 import CVATLogo from 'components/common/cvat-logo';
 import { switchSettingsModalVisible as switchSettingsModalVisibleAction } from 'actions/settings-actions';
 import { logoutAsync } from 'actions/auth-actions';
@@ -161,7 +158,6 @@ function HeaderComponent(props: Props): JSX.Element {
         settingsModalVisible,
         shortcutsModalVisible,
         switchSettingsShortcut,
-        isAnalyticsPluginActive,
         organizationFetching,
         currentOrganization,
         organizationsList,
@@ -175,7 +171,7 @@ function HeaderComponent(props: Props): JSX.Element {
     } = props;
 
     const {
-        CHANGELOG_URL, LICENSE_URL, GITHUB_URL, GUIDE_URL, DISCORD_URL,
+        CHANGELOG_URL, LICENSE_URL, DISCORD_URL,
     } = config;
 
     const isMounted = useIsMounted();
@@ -204,15 +200,7 @@ function HeaderComponent(props: Props): JSX.Element {
         },
     };
 
-    const aboutPlugins = usePlugins((state: CombinedState) => state.plugins.components.about.links.items, props);
     const aboutLinks: [JSX.Element, number][] = [];
-    aboutLinks.push([(
-        <Col key='changelog'>
-            <a href={CHANGELOG_URL} target='_blank' rel='noopener noreferrer'>
-                What&apos;s new?
-            </a>
-        </Col>
-    ), 0]);
     aboutLinks.push([(
         <Col key='license'>
             <a href={LICENSE_URL} target='_blank' rel='noopener noreferrer'>
@@ -220,17 +208,6 @@ function HeaderComponent(props: Props): JSX.Element {
             </a>
         </Col>
     ), 10]);
-    aboutLinks.push([(
-        <Col key='discord'>
-            <a href={DISCORD_URL} target='_blank' rel='noopener noreferrer'>
-                Find us on Discord
-            </a>
-        </Col>
-    ), 20]);
-
-    aboutLinks.push(...aboutPlugins.map(({ component: Component, weight }, index: number) => (
-        [<Component key={index} targetProps={props} />, weight] as [JSX.Element, number]
-    )));
 
     const showAboutModal = useCallback((): void => {
         Modal.info({
@@ -242,10 +219,6 @@ function HeaderComponent(props: Props): JSX.Element {
                         <Text strong>Server version:</Text>
                         <Text type='secondary'>{` ${about.server.version}`}</Text>
                     </p>
-                    <p>
-                        <Text strong>UI version:</Text>
-                        <Text type='secondary'>{` ${about.packageVersion.ui}`}</Text>
-                    </p>
                     <Row justify='space-around'>
                         { aboutLinks.sort((item1, item2) => item1[1] - item2[1])
                             .map((item) => item[0]) }
@@ -253,11 +226,6 @@ function HeaderComponent(props: Props): JSX.Element {
                 </div>
             ),
             width: 800,
-            okButtonProps: {
-                style: {
-                    width: '100px',
-                },
-            },
         });
     }, [about]);
 
@@ -267,11 +235,7 @@ function HeaderComponent(props: Props): JSX.Element {
 
     const resetOrganization = (): void => {
         localStorage.removeItem('currentOrganization');
-        if (/(webhooks)|(\d+)/.test(window.location.pathname)) {
-            window.location.pathname = '/';
-        } else {
-            window.location.reload();
-        }
+        window.location.reload();
     };
 
     const setNewOrganization = (organization: Organization | null): void => {
@@ -279,12 +243,7 @@ function HeaderComponent(props: Props): JSX.Element {
             resetOrganization();
         } else if (organization && (!currentOrganization || currentOrganization.slug !== organization.slug)) {
             localStorage.setItem('currentOrganization', organization.slug);
-            if (/\d+/.test(window.location.pathname)) {
-                // a resource is opened (task/job/etc.)
-                window.location.pathname = '/';
-            } else {
-                window.location.reload();
-            }
+            window.location.reload();
         }
     };
 
@@ -326,28 +285,13 @@ function HeaderComponent(props: Props): JSX.Element {
                 className: 'cvat-header-menu-open-organization',
                 onClick: () => history.push('/organization'),
             }] : []), {
-                key: 'invitations',
-                icon: <MailOutlined />,
-                label: 'Invitations',
-                className: 'cvat-header-menu-organization-invitations-item',
-                onClick: () => history.push('/invitations'),
-            }, {
                 key: 'create_organization',
                 icon: <PlusOutlined />,
                 label: 'Create',
                 className: 'cvat-header-menu-create-organization',
                 onClick: () => history.push('/organizations/create'),
             },
-            ...(!!organizationsList && viewType === 'list' ? [{
-                key: 'switch_organization',
-                label: 'Switch organization',
-                onClick: () => {
-                    openSelectOrganizationModal(setNewOrganization);
-                },
-            }] : []),
             ...(!!organizationsList && viewType === 'menu' ? [{
-                type: 'divider' as const,
-            }, {
                 key: '$personal',
                 label: 'Personal workspace',
                 className: !currentOrganization ? 'cvat-header-menu-active-organization-item' : 'cvat-header-menu-organization-item',
@@ -365,16 +309,8 @@ function HeaderComponent(props: Props): JSX.Element {
         key: 'settings',
         icon: <SettingOutlined />,
         onClick: () => switchSettingsModalVisible(true),
-        title: `Press ${switchSettingsShortcut} to switch`,
         label: 'Settings',
     }, 30]);
-
-    menuItems.push([{
-        key: 'about',
-        icon: <InfoCircleOutlined />,
-        onClick: () => showAboutModal(),
-        label: 'About',
-    }, 40]);
 
     menuItems.push([{
         key: 'logout',
@@ -384,16 +320,10 @@ function HeaderComponent(props: Props): JSX.Element {
         disabled: logoutFetching,
     }, 50]);
 
-    menuItems.push(...plugins
-        .map(({ component, weight }): typeof menuItems[0] => [component({ targetProps: props }), weight]),
-    );
-
-    const getButtonClassName = (value: string, highlightable = true): string => {
-        // eslint-disable-next-line security/detect-non-literal-regexp
+    const getButtonClassName = (value: string): string => {
         const regex = new RegExp(`${value}$`);
         const baseClass = `cvat-header-${value}-button cvat-header-button`;
-        return highlightable && location.pathname.match(regex) ?
-            `${baseClass} cvat-active-header-button` : baseClass;
+        return location.pathname.match(regex) ? `${baseClass} cvat-active-header-button` : baseClass;
     };
 
     return (
@@ -404,116 +334,26 @@ function HeaderComponent(props: Props): JSX.Element {
                 <Button
                     className={getButtonClassName('projects')}
                     type='link'
-                    value='projects'
-                    href='/projects?page=1'
-                    onClick={(event: React.MouseEvent): void => {
-                        event.preventDefault();
-                        history.push('/projects');
-                    }}
+                    onClick={() => history.push('/projects')}
                 >
                     Projects
                 </Button>
                 <Button
                     className={getButtonClassName('tasks')}
                     type='link'
-                    value='tasks'
-                    href='/tasks?page=1'
-                    onClick={(event: React.MouseEvent): void => {
-                        event.preventDefault();
-                        history.push('/tasks');
-                    }}
+                    onClick={() => history.push('/tasks')}
                 >
                     Tasks
                 </Button>
                 <Button
                     className={getButtonClassName('jobs')}
                     type='link'
-                    value='jobs'
-                    href='/jobs?page=1'
-                    onClick={(event: React.MouseEvent): void => {
-                        event.preventDefault();
-                        history.push('/jobs');
-                    }}
+                    onClick={() => history.push('/jobs')}
                 >
                     Jobs
                 </Button>
-                <Button
-                    className={getButtonClassName('cloudstorages')}
-                    type='link'
-                    value='cloudstorages'
-                    href='/cloudstorages?page=1'
-                    onClick={(event: React.MouseEvent): void => {
-                        event.preventDefault();
-                        history.push('/cloudstorages');
-                    }}
-                >
-                    Cloud Storages
-                </Button>
-                <Button
-                    className={getButtonClassName('requests')}
-                    type='link'
-                    value='requests'
-                    href='/requests?page=1'
-                    onClick={(event: React.MouseEvent): void => {
-                        event.preventDefault();
-                        history.push('/requests');
-                    }}
-                >
-                    Requests
-                </Button>
-                <Button
-                    className={getButtonClassName('models')}
-                    type='link'
-                    value='models'
-                    href='/models'
-                    onClick={(event: React.MouseEvent): void => {
-                        event.preventDefault();
-                        history.push('/models');
-                    }}
-                >
-                    Models
-                </Button>
-                {isAnalyticsPluginActive && user.hasAnalyticsAccess ? (
-                    <Button
-                        className={getButtonClassName('analytics', false)}
-                        type='link'
-                        href='/analytics'
-                        onClick={(event: React.MouseEvent): void => {
-                            event.preventDefault();
-                            window.open('/analytics', '_blank');
-                        }}
-                    >
-                        Analytics
-                    </Button>
-                ) : null}
             </div>
             <div className='cvat-right-header'>
-                <CVATTooltip overlay='Click to open repository'>
-                    <Button
-                        icon={<GithubOutlined />}
-                        size='large'
-                        className='cvat-open-repository-button cvat-header-button'
-                        type='link'
-                        href={GITHUB_URL}
-                        onClick={(event: React.MouseEvent): void => {
-                            event.preventDefault();
-                            window.open(GITHUB_URL, '_blank');
-                        }}
-                    />
-                </CVATTooltip>
-                <CVATTooltip overlay='Click to open guide'>
-                    <Button
-                        icon={<QuestionCircleOutlined />}
-                        size='large'
-                        className='cvat-open-guide-button cvat-header-button'
-                        type='link'
-                        href={GUIDE_URL}
-                        onClick={(event: React.MouseEvent): void => {
-                            event.preventDefault();
-                            window.open(GUIDE_URL, '_blank');
-                        }}
-                    />
-                </CVATTooltip>
                 <Dropdown
                     trigger={['click']}
                     destroyPopupOnHide
@@ -525,27 +365,15 @@ function HeaderComponent(props: Props): JSX.Element {
                         className: 'cvat-header-menu',
                     }}
                     className='cvat-header-menu-user-dropdown'
-                    onOpenChange={(open: boolean) => {
-                        if (open && (organizationsListSearch || organizationsListPage !== 1)) {
-                            fetchOrganizations();
-                        }
-                    }}
                 >
                     <span>
                         <UserOutlined className='cvat-header-dropdown-icon' />
                         <Row>
                             <Col span={24}>
                                 <Text strong className='cvat-header-menu-user-dropdown-user'>
-                                    {user.username.length > 14 ? `${user.username.slice(0, 10)} ...` : user.username}
+                                    {user.username}
                                 </Text>
                             </Col>
-                            { currentOrganization ? (
-                                <Col span={24}>
-                                    <Text className='cvat-header-menu-user-dropdown-organization'>
-                                        {currentOrganization.slug}
-                                    </Text>
-                                </Col>
-                            ) : null }
                         </Row>
                         <CaretDownOutlined className='cvat-header-dropdown-icon' />
                     </span>
