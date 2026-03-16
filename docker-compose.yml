@@ -14,7 +14,7 @@ x-backend-env: &backend-env
   CVAT_LOG_IMPORT_ERRORS: 'true'
   CVAT_ALLOW_STATIC_CACHE: '${CVAT_ALLOW_STATIC_CACHE:-no}'
   no_proxy: ${no_proxy:-}
-  SMOKESCREEN_OPTS: "" # Hata veren değişkeni burada tanımladık
+  SMOKESCREEN_OPTS: ""
 
 x-backend-deps: &backend-deps
   cvat_redis_inmem:
@@ -22,6 +22,8 @@ x-backend-deps: &backend-deps
   cvat_redis_ondisk:
     condition: service_started
   cvat_db:
+    condition: service_started
+  cvat_opa:
     condition: service_started
 
 services:
@@ -59,17 +61,34 @@ services:
       - cvat
     command: ["--compact-cron", "0 3 * * *"]
 
+  cvat_opa:
+    container_name: cvat_opa
+    image: openpolicyagent/opa:0.61.0
+    restart: always
+    networks:
+      cvat:
+        aliases:
+          - opa
+    command:
+      - "run"
+      - "--server"
+      - "--addr=:8181"
+      - "--set=decision_logs.console=true"
+      - "--diagnostic-addr=:8282"
+
   cvat_server:
     container_name: cvat_server
     image: cvat/server:${CVAT_VERSION:-dev}
     restart: always
     depends_on: *backend-deps
+    links:
+      - cvat_opa:opa
     environment:
       <<: *backend-env
       ALLOWED_HOSTS: '*'
       ADAPTIVE_AUTO_ANNOTATION: 'false'
       NUMPROCS: 2
-      CVAT_ANALYTICS: 0   # Analytics kapatıldı
+      CVAT_ANALYTICS: 0
       CVAT_BASE_URL:
       ONE_RUNNING_JOB_IN_QUEUE_PER_USER:
     command: init run server

@@ -1,345 +1,120 @@
+// Deep Studio - Custom Theme
 // Copyright (C) CVAT.ai Corporation
-//
 // SPDX-License-Identifier: MIT
 
 @import '../../styles';
 
-$heading-font: 'Sora', sans-serif;
-$signing-font: 'Roboto Flex', sans-serif;
-$heading-color: white;
+// --- DEEP STUDIO RENK VE FONT AYARLARI ---
+$deep-purple: #2E0854;
+$heading-font: 'Inter', sans-serif;
+$signing-font: 'Inter', sans-serif;
+$heading-color: #2E0854;
 $error-color: #ff4d4f;
-$action-button-color-1: black;
-$action-button-color-2: gray;
-$action-button-color-3: #d4d4d4;
-$placeholder-color: #c5bfbf;
-$base-transition: all 0.8s ease;
-$input-transition: all 0.3s ease;
-$social-google-background: #4286f5;
+$action-button-color-1: #2E0854; // Ana Mor
+$action-button-color-2: #ffffff;
+$placeholder-color: #94a3b8;
+$base-transition: all 0.3s ease;
+
+// Arka planı bembeyaz yapalım
+.ant-layout {
+    background: #ffffff !important;
+}
 
 .cvat-signing-layout {
     font-family: $signing-font;
+    background: #ffffff !important;
 }
 
+// "Deep Studio" Yazısının Stili
 .cvat-signing-title {
     .ant-typography {
-        color: $heading-color;
+        color: $deep-purple !important;
         margin: 0;
-        font-size: 68px;
+        font-size: 72px !important;
         font-family: $heading-font;
-        font-weight: 400;
+        font-weight: 800 !important;
+        letter-spacing: -3px;
     }
-
-    .ant-typography:last-child {
-        margin: 0;
-    }
-}
-
-.cvat-signing-header-logo-wrapper {
-    height: 100%;
-}
-
-.cvat-signing-header {
-    background: transparent;
-    position: fixed;
-    padding: $grid-unit-size * 2 0 0 0;
-    width: 100%;
-
-    .cvat-logo-icon {
-        filter: brightness(0) invert(1);
+    // Alt başlık stili (Subtitle)
+    .deep-studio-subtitle {
+        color: #64748b !important;
+        font-size: 20px !important;
+        font-weight: 400 !important;
+        letter-spacing: 0 !important;
     }
 }
 
+// Arka plandaki gereksiz SVG'yi gizleyelim (Beyaz tema için)
 .cvat-signing-background {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    min-width: $grid-unit-size * 128;
+    display: none !important;
 }
 
-.cvat-credentials-link {
-    a {
-        color: black;
-        text-decoration: underline;
-        text-decoration-thickness: 2px;
-    }
+// Giriş Kartını (Sağ taraf) Şıklaştıralım
+.cvat-login-form-wrapper {
+    border-radius: 24px !important;
+    background: #ffffff !important;
+    padding: $grid-unit-size * 8 !important;
+    height: auto !important;
+    box-shadow: 0 20px 25px -5px rgba(46, 8, 84, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid #f1f5f9 !important;
 
-    a:hover {
-        color: black;
-        text-decoration: underline;
-        text-decoration-thickness: 2px;
+    h2 { // "Sign in" başlığı
+        color: $deep-purple !important;
+        font-weight: 700 !important;
     }
 }
 
-.cvat-input-floating-label {
-    .ant-input-prefix {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1;
-        font-size: 20px;
-        transition: $input-transition;
-        transform-origin: left top;
-
-        .ant-typography {
-            color: $placeholder-color;
-        }
-    }
-}
-
-.cvat-input-floating-label-above {
-    @extend .cvat-input-floating-label;
-
-    .ant-input-prefix {
-        transition: $input-transition;
-        transform: translateY(-100%) scale(0.7);
-    }
-}
-
+// Input Alanları
 .cvat-credentials-form-item {
     .ant-input-affix-wrapper {
-        border: none;
-        box-shadow: 0 1px 0 0 $border-color-1;
-        border-radius: 0;
-        padding: 0;
-        transition: $base-transition;
-    }
+        border-bottom: 2px solid #e2e8f0 !important;
+        box-shadow: none !important;
 
-    .ant-input-affix-wrapper-focused {
-        @extend .cvat-input-floating-label-above;
-
-        box-shadow: 0 2px 0 0 black;
-    }
-
-    .ant-input-affix-wrapper-focused:hover {
-        box-shadow: 0 2px 0 0 black;
+        &.ant-input-affix-wrapper-focused {
+            border-bottom: 2px solid $deep-purple !important;
+        }
     }
 
     .ant-input {
-        font-size: 20px;
-        padding: $grid-unit-size * 1.5 0 $grid-unit-size * 0.75 0 !important;
-
-        &:-webkit-autofill,
-        &:-webkit-autofill:hover,
-        &:-webkit-autofill:focus {
-            box-shadow: 0 0 0 1000px white inset !important;
-            transition: background-color 10s ease-in-out 0s;
-        }
-    }
-
-    .ant-input-affix-wrapper-disabled {
-        background: transparent;
-    }
-
-    .cvat-signing-input-not-empty {
-        @extend .cvat-input-floating-label;
+        font-size: 18px !important;
+        background: transparent !important;
     }
 }
 
-.cvat-credentials-form-item.ant-form-item-has-error {
-    .ant-input-affix-wrapper {
-        border: none;
-        box-shadow: 0 1px 0 0 $error-color;
-        border-radius: 0;
-        padding: 0;
-        transition: $base-transition;
-    }
-
-    .ant-input-affix-wrapper-focused {
-        box-shadow: 0 2px 0 0 $error-color !important;
-    }
-}
-
-.cvat-credentials-navigation {
-    margin-bottom: $grid-unit-size * 4;
-}
-
+// Giriş Butonu
 .cvat-credentials-action-button {
     width: 100%;
-    border-radius: $border-radius-base;
-    background-color: $action-button-color-1;
-    height: $grid-unit-size * 11;
-    color: white;
+    border-radius: 12px !important;
+    background-color: $deep-purple !important;
+    height: 52px !important;
+    color: white !important;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
     border: none;
-    box-shadow: none;
     transition: $base-transition;
+    margin-top: 20px;
 
     &:hover {
-        background-color: $action-button-color-1 !important;
-        color: $action-button-color-2 !important;
+        background-color: #3d0b6e !important; // Biraz daha açık mor
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(46, 8, 84, 0.3) !important;
     }
 }
 
-.cvat-login-form-wrapper {
-    border-radius: $border-radius-base;
-    background: $background-color-1;
-    padding: $grid-unit-size * 6;
-    height: $grid-unit-size * 87;
+// Alt linkler (Forgot password vb.)
+.cvat-credentials-link {
+    a {
+        color: $deep-purple !important;
+        font-weight: 500;
+        text-decoration: none !important;
 
-    .cvat-credentials-form-item {
-        height: $grid-unit-size * 9.5;
-
-        .ant-form-item-explain {
-            margin-bottom: $grid-unit-size * 0.5;
+        &:hover {
+            text-decoration: underline !important;
         }
     }
-
-    .ant-form-item {
-        margin-bottom: 0;
-    }
-
-    .ant-form-item-explain-error:not(:first-child) {
-        display: none;
-    }
 }
 
-.cvat-signing-form {
-    position: relative;
-    height: $grid-unit-size * 52;
-
-    .ant-form-item:last-child:not(.cvat-credentials-form-item) {
-        position: absolute;
-        bottom: $grid-unit-size * 6;
-        width: 100%;
-        box-sizing: border-box;
-    }
-}
-
-.cvat-login-form {
-    @extend .cvat-signing-form;
-
-    margin-top: $grid-unit-size * 10;
-
-    .ant-form-item:first-child {
-        margin-bottom: $grid-unit-size * 10;
-    }
-}
-
-.cvat-login-form-extended {
-    .ant-form-item:first-child {
-        margin-bottom: 0;
-    }
-}
-
-.cvat-password-reset-form-wrapper {
-    @extend .cvat-login-form-wrapper;
-
-    h2 {
-        margin-bottom: 0;
-    }
-
-    .cvat-password-reset-tip {
-        font-weight: bold;
-        margin-bottom: $grid-unit-size * 20;
-    }
-}
-
-.cvat-password-reset-form {
-    @extend .cvat-signing-form;
-
-    .cvat-credentials-form-item {
-        margin-bottom: $grid-unit-size * 3;
-    }
-
-    margin-top: $grid-unit-size * 6;
-}
-
-.cvat-register-form-wrapper {
-    @extend .cvat-login-form-wrapper;
-
-    .cvat-register-form {
-        @extend .cvat-signing-form;
-
-        height: $grid-unit-size * 68;
-    }
-
-    .cvat-agreements-form-item {
-        height: $grid-unit-size * 6;
-
-        .ant-form-item-explain {
-            margin-top: -$grid-unit-size;
-        }
-
-        .ant-checkbox-wrapper {
-            display: flex;
-            align-items: center;
-        }
-
-        .ant-checkbox {
-            top: 0;
-
-            .ant-checkbox-inner {
-                width: $grid-unit-size * 5;
-                height: $grid-unit-size * 3;
-                border-radius: $border-radius-base;
-                background: #d9d9d9;
-                border: none;
-
-                &:hover {
-                    border: none;
-                }
-
-                &::after {
-                    position: absolute;
-                    content: "";
-                    height: $grid-unit-size * 2;
-                    width: $grid-unit-size * 2;
-                    border-radius: $border-radius-base;
-                    top: $grid-unit-size * 0.5;
-                    left: $grid-unit-size * 0.5;
-                    background-color: white;
-                    opacity: 1;
-                    transform: none;
-                    border: none;
-                }
-            }
-        }
-
-        .ant-checkbox-checked {
-            .ant-checkbox-inner {
-                width: $grid-unit-size * 5;
-                height: $grid-unit-size * 3;
-                border-radius: $border-radius-base;
-                background: $slider-color;
-                border: none;
-
-                &:hover {
-                    border: none;
-                }
-
-                &::after {
-                    position: absolute;
-                    content: "";
-                    height: $grid-unit-size * 2;
-                    width: $grid-unit-size * 2;
-                    border-radius: $border-radius-base;
-                    top: $grid-unit-size * 0.5;
-                    left: $grid-unit-size * 2.5;
-                    background-color: white;
-                    opacity: 1;
-                    transform: none;
-                    border: none;
-                }
-            }
-        }
-    }
-
-    .cvat-register-form-last-field {
-        margin-bottom: 0;
-    }
-}
-
-.cvat-register-form-wrapper-extended {
-    @extend .cvat-login-form-wrapper;
-
-    .cvat-register-form-last-field {
-        margin-bottom: $grid-unit-size;
-    }
-
-    .cvat-register-form {
-        @extend .cvat-signing-form;
-
-        height: $grid-unit-size * 76;
-    }
+.cvat-signing-header {
+    display: none; // Temiz görünüm için header'ı kapatalım
 }

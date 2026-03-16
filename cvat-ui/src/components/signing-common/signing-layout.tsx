@@ -4,13 +4,10 @@
 
 import './styles.scss';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { CombinedState } from 'reducers';
 import Layout from 'antd/lib/layout';
 import { Col, Row } from 'antd/lib/grid';
 import Title from 'antd/lib/typography/Title';
-import CVATLogo from 'components/common/cvat-logo';
-import SVGSigningBackground from '../../assets/signing-background.svg';
+import Text from 'antd/lib/typography/Text';
 
 interface SignInLayoutComponentProps {
     children: JSX.Element | JSX.Element[];
@@ -36,55 +33,42 @@ export const formSizes: FormSizes = {
         sm: { span: 24 },
         md: { span: 24 },
         lg: { span: 24 },
-        xl: { span: 15 },
+        xl: { span: 14 },
         xxl: { span: 12 },
     },
     form: {
-        xs: { span: 14 },
-        sm: { span: 14 },
+        xs: { span: 18 },
+        sm: { span: 16 },
         md: { span: 14 },
-        lg: { span: 14 },
+        lg: { span: 12 },
         xl: { span: 16 },
-        xxl: { span: 16 },
+        xxl: { span: 14 },
     },
 };
 
 function SignInLayout(props: SignInLayoutComponentProps): JSX.Element {
     const { children } = props;
-    const { Content, Header } = Layout;
-    const subtitle = useSelector((state: CombinedState) => state.about.server.subtitle);
+    const { Content } = Layout;
 
     const titleSizes = {
         xs: { span: 0 },
         sm: { span: 0 },
         md: { span: 0 },
         lg: { span: 0 },
-        xl: { span: 8 },
+        xl: { span: 10 },
         xxl: { span: 10 },
     };
-    const logoSizes = {
-        xs: { span: 21 },
-        sm: { span: 21 },
-        md: { span: 21 },
-        lg: { span: 21 },
-        xl: { span: 21 },
-        xxl: { span: 22 },
-    };
+
     return (
-        <Layout>
-            <SVGSigningBackground className='cvat-signing-background' />
-            <Header className='cvat-signing-header'>
-                <Row className='cvat-signing-header-logo-wrapper' justify='center' align='middle'>
-                    <Col {...logoSizes}>
-                        <CVATLogo />
-                    </Col>
-                </Row>
-            </Header>
+        <Layout className='cvat-signing-layout-container'>
             <Layout className='cvat-signing-layout'>
                 <Content>
                     <Row justify='center' align='middle' style={{ height: '100%' }}>
-                        <Col {...titleSizes} className='cvat-signing-title'>
-                            <Title>{subtitle}</Title>
+                        <Col {...titleSizes} className='cvat-signing-title-container'>
+                            <Title className='deep-studio-title'>Deep Studio</Title>
+                            <Text className='deep-studio-subtitle'>
+                                Advanced AI Data Solutions & Labeling Services
+                            </Text>
                         </Col>
                         {children}
                     </Row>

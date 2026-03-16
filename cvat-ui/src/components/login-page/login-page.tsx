@@ -2,7 +2,7 @@
 // Copyright (C) CVAT.ai Corporation
 //
 // SPDX-License-Identifier: MIT
-
+import './styles.scss';
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
@@ -22,11 +22,10 @@ function LoginPageComponent(props: LoginPageComponentProps & RouteComponentProps
     return (
         <SigningLayout>
             <Col {...formSizes.wrapper}>
-                <Row justify='center'>
+                <Row justify='center' align='middle' style={{ height: '100%' }}>
                     <Col {...formSizes.form}>
                         <LoginForm
                             fetching={fetching}
-                            // Aşağıdaki değerleri 'false' yaparak worker'ların bu yollara girmesini engelliyoruz
                             renderResetPassword={false}
                             renderRegistrationComponent={false}
                             renderBasicLoginComponent={true}
