@@ -1,0 +1,42 @@
+/* Tüm ekranı lacivert yap */
+body, html, #root, .ant-layout { background: #0f172a !important; }
+
+/* Kutu haricindeki her şeyi gizle */
+.cvat-signing-layout-container, .cvat-signing-background, .cvat-signing-header, .cvat-signing-title, h2 { 
+    display: none !important; 
+}
+
+/* Giriş kutusunu ortala ve şıklaştır */
+.cvat-login-form-wrapper {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 440px !important;
+    background: #ffffff !important;
+    padding: 40px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;
+    display: block !important;
+    z-index: 99999 !important;
+}
+
+/* Başlık */
+.cvat-login-form-wrapper::before {
+    content: "Deep Studio";
+    display: block;
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: #2E0854;
+    margin-bottom: 30px;
+}
+
+/* Mor Buton */
+.cvat-credentials-action-button {
+    background: #2E0854 !important;
+    border: none !important;
+    height: 50px !important;
+    border-radius: 8px !important;
+    font-weight: bold !important;
+}

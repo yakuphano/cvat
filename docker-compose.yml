@@ -89,6 +89,7 @@ services:
       ADAPTIVE_AUTO_ANNOTATION: 'false'
       NUMPROCS: 2
       CVAT_ANALYTICS: 0
+      CVAT_SERVER_SUBTITLE: "Deep Studio"
       CVAT_BASE_URL:
       ONE_RUNNING_JOB_IN_QUEUE_PER_USER:
     command: init run server
@@ -110,12 +111,12 @@ services:
 
   cvat_ui:
     container_name: cvat_ui
-    build:
-      context: .
-      dockerfile: Dockerfile.ui # Eğer ana klasörde bu isimde dosya yoksa cvat-ui/Dockerfile dene
-    image: cvat/ui:dev
+    image: cvat/ui:${CVAT_VERSION:-dev}
     restart: always
-    # ... diğer kısımlar aynı kalsın ...
+    depends_on:
+      - cvat_server
+    volumes:
+      - ./cvat-ui/src:/tmp/cvat-ui/src
     labels:
       traefik.enable: "true"
       traefik.http.services.cvat-ui.loadbalancer.server.port: "8000"
