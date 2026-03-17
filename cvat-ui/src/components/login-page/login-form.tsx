@@ -1,14 +1,9 @@
-// Copyright (C) 2020-2022 Intel Corporation
-// Copyright (C) CVAT.ai Corporation
-//
-// SPDX-License-Identifier: MIT
-
 import React from 'react';
 import Form from 'antd/lib/form';
 import Button from 'antd/lib/button';
 import Input from 'antd/lib/input';
-import { Col, Row } from 'antd/lib/grid';
-import Title from 'antd/lib/typography/Title';
+import { Row, Col } from 'antd/lib/grid';
+import { Link } from 'react-router-dom';
 import CVATSigningInput, { CVATInputType } from 'components/signing-common/cvat-signing-input';
 
 export interface LoginData {
@@ -26,15 +21,8 @@ function LoginFormComponent(props: Props): JSX.Element {
     const [form] = Form.useForm();
 
     return (
-        <div className='cvat-login-form-wrapper'>
-            <Row justify='start' className='cvat-credentials-navigation'>
-                {/* Navigasyon ve linkler sadeleştirme amacıyla kaldırıldı */}
-            </Row>
-            <Col>
-                <Title level={2}> Sign in </Title>
-            </Col>
+        <div className='ds-actual-form-wrapper'>
             <Form
-                className='cvat-login-form'
                 form={form}
                 layout='vertical'
                 onFinish={(loginData: LoginData) => {
@@ -46,10 +34,7 @@ function LoginFormComponent(props: Props): JSX.Element {
                     name='credential'
                     rules={[{ required: true, message: 'Please specify a username or email' }]}
                 >
-                    <Input
-                        autoComplete='username'
-                        placeholder='Enter your username'
-                    />
+                    <Input autoComplete='username' placeholder='Username or email' />
                 </Form.Item>
 
                 <Form.Item
@@ -60,7 +45,7 @@ function LoginFormComponent(props: Props): JSX.Element {
                     <CVATSigningInput
                         type={CVATInputType.PASSWORD}
                         id='password'
-                        placeholder='Enter your password'
+                        placeholder='Password'
                         autoComplete='current-password'
                     />
                 </Form.Item>
@@ -73,9 +58,14 @@ function LoginFormComponent(props: Props): JSX.Element {
                         type='primary'
                         block
                     >
-                        Login
+                        Sign In
                     </Button>
                 </Form.Item>
+
+                <Row justify='space-between' className='ds-nav-links'>
+                    <Col><Link to='/auth/register'>Create an Account</Link></Col>
+                    <Col><Link to='/auth/password/reset'>Forgot password?</Link></Col>
+                </Row>
             </Form>
         </div>
     );

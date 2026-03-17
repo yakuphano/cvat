@@ -1,14 +1,7 @@
-// Copyright (C) 2020-2022 Intel Corporation
-// Copyright (C) CVAT.ai Corporation
-//
-// SPDX-License-Identifier: MIT
 import './styles.scss';
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
-import { Row, Col } from 'antd/lib/grid';
-
-import SigningLayout, { formSizes } from 'components/signing-common/signing-layout';
 import LoginForm, { LoginData } from './login-form';
 
 interface LoginPageComponentProps {
@@ -20,23 +13,28 @@ function LoginPageComponent(props: LoginPageComponentProps & RouteComponentProps
     const { fetching, onLogin } = props;
 
     return (
-        <SigningLayout>
-            <Col {...formSizes.wrapper}>
-                <Row justify='center' align='middle' style={{ height: '100%' }}>
-                    <Col {...formSizes.form}>
-                        <LoginForm
-                            fetching={fetching}
-                            renderResetPassword={false}
-                            renderRegistrationComponent={false}
-                            renderBasicLoginComponent={true}
-                            onSubmit={(loginData: LoginData): void => {
-                                onLogin(loginData.credential, loginData.password);
-                            }}
-                        />
-                    </Col>
-                </Row>
-            </Col>
-        </SigningLayout>
+        <div className="ds-login-container">
+            <div className="ds-login-card">
+                <div className="ds-side-panel">
+                    <div className="ds-welcome-content">
+                        <h1>Deep Studio</h1>
+                        <p>Welcome back!</p>
+                        <span>Sign in to continue to your dashboard.</span>
+                    </div>
+                </div>
+                <div className="ds-form-panel">
+                    <div className="ds-form-header">
+                        <h2>Sign In</h2>
+                    </div>
+                    <LoginForm
+                        fetching={fetching}
+                        onSubmit={(loginData: LoginData): void => {
+                            onLogin(loginData.credential, loginData.password);
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
     );
 }
 

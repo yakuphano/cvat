@@ -1,77 +1,64 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>Deep Studio | Login</title>
+    <meta charset="UTF-8"/><title>Deep Studio</title>
     <style>
-        /* 1. Arkaplanı Ayarla */
-        body, html, #root {
-            height: 100vh !important; margin: 0; padding: 0;
-            background: #0f172a !important; /* Lacivert Arkaplan */
-            display: flex !important; justify-content: center !important; align-items: center !important;
-            font-family: Arial, sans-serif;
-        }
-
-        /* 2. CVAT'ın Orijinal Tasarımını Devre Dışı Bırak */
-        .cvat-signing-layout-container, .cvat-signing-background, .cvat-signing-header, .cvat-signing-title, h2 {
-            display: none !important;
-        }
-
-        /* 3. BİZİM KUTUMUZUN STİLİ */
-        .cvat-login-form-wrapper {
-            width: 420px !important;
-            background: #ffffff !important;
-            padding: 40px !important;
-            border-radius: 16px !important;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3) !important;
-            display: block !important;
-            z-index: 9999 !important;
-            position: relative !important;
-        }
-
-        /* 4. Deep Studio Başlığı */
-        .deep-studio-title {
-            text-align: center;
-            font-size: 32px;
-            font-weight: 800;
-            color: #2E0854;
-            margin-bottom: 30px;
-        }
-
-        /* 5. İnputlar ve Buton */
-        .ant-input { border-radius: 8px !important; padding: 10px !important; }
-        .cvat-credentials-action-button {
-            background: #2E0854 !important;
-            border: none !important;
-            height: 48px !important;
-            border-radius: 8px !important;
-            font-weight: bold !important;
-        }
+        /* Sadece yükleme ekranı kararmasın diye temel bir renk */
+        body { background: #0f172a !important; margin: 0; }
     </style>
 </head>
 <body>
     <div id="root"></div>
+    <div id="layout-grid"></div>
 
     <script>
-        // FORMUN GÖRÜNMESİNİ SAĞLAYAN SİHİRLİ DOKUNUŞ
-        function fixDesign() {
-            const wrapper = document.querySelector('.cvat-login-form-wrapper');
-            if (wrapper && !document.querySelector('.deep-studio-title')) {
-                // Başlığı Ekle
-                const title = document.createElement('div');
-                title.className = 'deep-studio-title';
-                title.innerText = 'Deep Studio';
-                wrapper.prepend(title);
+        // BU BÖLÜM: Formu bulup saniyeler içinde senin istediğin hale getiren robot
+        const observer = new MutationObserver(() => {
+            const form = document.querySelector('.cvat-login-form-wrapper');
+            if (form && !form.getAttribute('data-styled')) {
+                // 1. Ana Paneli İkiye Böl ve Resimdeki Tasarımı Giydir
+                form.style.cssText = `
+                    display: flex !important; flex-direction: row !important;
+                    width: 850px !important; height: 500px !important;
+                    position: fixed !important; top: 50% !important; left: 50% !important;
+                    transform: translate(-50%, -50%) !important;
+                    background: white !important; border-radius: 20px !important;
+                    box-shadow: 0 30px 60px rgba(0,0,0,0.3) !important; z-index: 999999 !important;
+                    overflow: hidden !important; padding: 0 !important;
+                `;
 
-                // Kapsayıcıyı Görünür Yap
-                wrapper.style.display = 'block';
-                wrapper.style.opacity = '1';
-                wrapper.parentElement.style.display = 'block';
+                // 2. Sol tarafa Mor Paneli ve "Deep Studio" Yazısını Ekle
+                if (!document.getElementById('side-panel')) {
+                    const side = document.createElement('div');
+                    side.id = 'side-panel';
+                    side.style.cssText = `
+                        width: 45%; background: #2E0854; color: white;
+                        display: flex; flex-direction: column; justify-content: center;
+                        padding: 40px; font-family: sans-serif;
+                    `;
+                    side.innerHTML = '<h1 style="font-size:32px;margin:0">Deep Studio</h1><p style="font-size:18px;opacity:0.8;margin-top:20px">Welcome back! Sign in to continue.</p>';
+                    form.prepend(side);
+                }
+
+                // 3. Mail ve Şifre Kutularını "Gerçek Kutu" Yap
+                const inputs = form.querySelectorAll('.ant-input, .ant-input-affix-wrapper');
+                inputs.forEach(input => {
+                    input.style.cssText = `
+                        border: 2px solid #cbd5e1 !important; border-radius: 10px !important;
+                        height: 50px !important; margin-bottom: 15px !important;
+                        background: white !important; display: flex !important;
+                    `;
+                });
+
+                // 4. Giriş Butonunu Mor Yap
+                const btn = form.querySelector('.cvat-credentials-action-button');
+                if(btn) btn.style.cssText = "background:#2E0854!important;color:white!important;height:50px!important;border-radius:10px!important;width:100%!important;border:none!important;font-weight:bold!important;";
+
+                form.setAttribute('data-styled', 'true');
             }
-        }
-        // Sayfa yüklendikçe kontrol et
-        setInterval(fixDesign, 500);
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
     </script>
 
     <script defer="defer" src="/assets/cvat-ui.6d6ba43fd344a3a2695f.min.js"></script>
